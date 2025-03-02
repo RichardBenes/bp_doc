@@ -1,0 +1,3 @@
+= Bachelor thesis
+
+The Diploma document class has been downloaded from http://www.cs.vsb.cz/dvorsky/LaTeX.html[here], specifically the bachelor thesis LaTeX archive.
