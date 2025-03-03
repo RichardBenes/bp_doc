@@ -1,0 +1,154 @@
+% Na 1 A4. Tady se rozepíše zadání, "dá se mu tvar", zasadí se do obecného
+% rámce. Tedy, ne že bych úplně rozuměl těm dvěma posledním pojmům.
+
+V posledních letech se zvyšuje zájem o sběr dat ze senzorů nasazených v odlehlých lokalitách, 
+kde jedinou možností napájení jsou zabudované baterie (popř. různé formy energy harvestingu),
+a jediným komunikačním kanálem je rádiové spojení.
+
+Na tyto požadavky odpovídají sítě souhrnně nazývané LPWAN, tj. nízkoenergetické sítě velké rozlohy.
+Umožňují konstrukci zařízení která posílají data na vzdálenosti v řádu až desítek kilometrů, při výdrži na zabudovanou baterii v řádech let, popř. s možností napájení alternativními zdroji energie --- solární články, termoelektrické zdroje atp.
+
+Jako zajímavé se jeví použití těchto sítí při aktivitách volnočasových organizací pracujícími
+s dětmi a mládeží. Zařízení schopné odesílat digitální, strukturovaná data na delší vzdálenosti
+mohou zastat úkoly které, ač jsou jednoduché, vyžadují fyzickou přítomnost vedoucího.
+Typickým příkladem je kontrola zda hráči došli na dané místo v daný čas a splnili zadaný úkol.
+Tato práce se zabývá konstrukcí takového zařízení.
+
+Pro tento účel je, netypicky, "nízkopříkonovost" zařízení zcela nevýznamná. Předpokládá se že zařízení bude instalováno na jedno místo na dobu maximálně několika týdnů (letní tábory), a že může být v budoucnu rozšířeno o funkce které jsou energeticky náročné ze své podstaty --- např. reprodukce zvuků, osvětlování okolí, pohyb předměty pomocí motorů a serv atp.
+
+LPWAN komunikace je zvolena pro její další výhody --- umožňuje pokrýt potřebné oblasti
+signálem svépomocí, příslušné rádiové moduly jsou poměrně levné a fungují v bezlicenčních pásmech.
+
+Uživatelské rozhraní je realizováno aplikací pro OS Android, která se zařízením komunikuje skrze NFC.
+Díky tomu lze uživatelské rozhraní snadno upravovat, a zároveň se usnadňuje zajištění krytí proti
+vlivům prostředí, zejména dešti.
+
+
+\textbf{TODO: tvrdím zde spoustu věcí --- dohledat citace}
+
+
+% Běžně dostupné technologie rádiového přenosu pak lze zjednodušeně rozdělit do 
+% čtyřech skupin podle spotřeby energie a dosahu (třetím významným parametrem Je
+% pak rychlost přenosu).
+% Na krátké vzdálenosti v řádu max. desítek metrů lze využít např. WiFi pro 
+% vysoké či Bluetooth pro nízké přenosové rychlosti, na dlouhé vzdálenosti v řádu
+% kilometrů či desítek kilometrů existují
+
+
+%     \subsection{Povaha vyvíjeného zařízení}
+
+%     Cílem této práce je návrh a výroba zařízení pro použití při venkovních 
+%     volnočasových aktivitách, zejména pak na táborech a víkendových akcích
+%     pořádaných organizacemi pro děti a mládež.
+
+%     Vyvíjené zařízení má být schopno komunikovat na velké vzdálenosti (v řádu
+%     kilometrů) pomocí LoRa komunikace v síti LoRaWAN, a na krátké vzdálenosti
+%     pomocí NFC rozhraní.
+
+%     Smyslem tohoto zařízení je nahrazení jednoduchých úkolů běžně prováděných
+%     vedoucími, jako je vyčkávání na určitém místě a kontrola příchodu hráčů.
+
+%     \subsection{Funkcionalita zařízení}
+
+%     V této práci implementuji základní funkcionalitu prokazující funkčnost
+%     komunikací skrz NFC a LoRa/LoRaWAN. Pro vývoj firmwaru uvažuji
+%     následující scénář použití při organizovaných volnočasových aktivitách:
+
+%     \begin{enumerate}
+%         \item Zařízení se umístí do terénu
+%         \item Hráči dostanou za úkol se k zařízení dostat
+%         \item Hráči k zařízení přijdou, spustí svou aplikaci, vepíšou své jméno
+%             a dotknou se NFC portu zařízení
+%         \item Aplikace načte skrz NFC ze ze zařízení otázku
+%         \item Hráč v aplikaci vepíše odpověď na otázku
+%         \item Hráč znovu přiloží mobil k zařízení. Během tohoto přiložení 
+%             proběhnou následující akce:
+%         \begin{itemize}
+%             \item Aplikace skrz NFC zapíše do zařízení hráčovo jméno a jeho
+%                 odpověď na otázku
+%             \item Zařízení zkontroluje správnost zapsané odpovědi;
+%             \item Na základě správnosti odpovědi zařízení přepíše obsah tagu
+%                 s dalšími instrukcemi pro hráče
+%             \item Aplikace opakovaně čte obsah tagu; jakmile pozná změnu obsahu,
+%                 vyčte jej a zobrazí hráči
+%         \end{itemize}
+%         \item Zařízení zašle informaci s hráčovým jménem a jeho odpovědí skrz
+%             LoRaWAN na server TTN.
+%         \item Aplikace vedoucích opakovaně vyčítá a zobrazuje data ze serveru
+%     \end{enumerate}
+
+% \section{Popis jednotlivých částí projektu}
+
+%     V této práci probíhá komunikace mezi mobilní aplikací na telefonech hráčů,
+%     vyvíjeným zařízením, a mobilní aplikací vedoucích skrze LoRaWAN síť.
+%     Níže je popsána role každé části projektu.
+
+%     \subsection{Mobilní aplikace}
+
+%         Mobilní aplikace je vyvíjena pro OS Android s použitím oficiálně 
+%         podporovaného programovacího jazyka Kotlin.
+
+%         V této jedné aplikaci je implementována funkcionalita jak pro vedoucí,
+%         tak pro hráče. Toto stačí pro demostraci funkčnosti řešení, avšak při
+%         praktickém použití by jistě bylo vhodné tyto funkce oddělit do 
+%         zvláštních aplikací, či alespoň funkce určené pro vedoucí např. 
+%         uzamknout přístupovým heslem.
+
+%         Požadavky na mobilní aplikaci jsou:
+%         \begin{itemize}
+%             \item Z hlediska hráčů:
+%             \begin{itemize}
+%                 \item Načtení jména hráče
+%                 \item Čtení a zápis informací z NFC tagů
+%                 \item Zobrazení otázky vyčtené ze zařízení hráči
+%                 \item Možnost zápisu odpovědi uživatelem
+%                 \item Zobrazení pokynu k pokračování vyčteného ze zařízení
+%             \end{itemize}
+%             \item Z hlediska vedoucích:
+%             \begin{itemize}
+%                 \item Internetové připojení
+%                 \item Pravidelná kontrola dat na serveru
+%             \end{itemize}
+%         \end{itemize}
+
+%     \subsection{Vyvíjené zařízení}
+
+%         Vyvíjené zařízení je stěžejní částí práce. Je poskládáno z
+%         vývojových kitů, jejich seznam je uveden v \ref{itm:seznam_kitu}
+
+%         Požadavky na vyvíjené zařízení jsou:
+%         \begin{itemize}
+%             \item Zápis informací na \textbf{dynamický NFC tag}%dát link na to
+%             % co to je
+%             \item Reakce na čtení z dyn. NFC tagu
+%             \item Uchování otázek a jiných informací i po přerušení napájení
+%             \item Komunikace pomocí LoRa radiového spojení
+%             \item Odesílání dat v rámci LoRaWAN sítě 
+%             \item Vlastní zdroj energie
+%         \end{itemize}
+        
+%         Zařízení neodesílá ani neuchovává informaci o aktuálním čase. Je to z
+%         toho důvodu že TTN server automaticky označí každou přijatou zprávu
+%         časovou známkou, což poskytuje dostatečnou přesnost pro účely aktivit
+%         pro něž je zařízení použito.
+        
+%     \subsection{TTN server}
+
+%         Vyvíjené zařízení komunikuje v rámci sítě LoRaWAN; to zahrnuje síťový
+%         server (viz \ref{subsubsec:LoRaWAN_architecture}), provozovaný některým
+%         z LoRaWAN operátorů.
+        
+%         V této práci používám síť The Things Network, která zdarma poskytuje
+%         brány a síťový server.
+
+%         Požadavky na tento server jsou:
+%         \begin{itemize}
+%             \item Možnost zaregistrování vyvíjené LoRaWAN aplikace
+%             \item Příjem dat z vyvíjeného zařízení
+%             \item Uchování přijatých dat po dostatečně dlouhou dobu a jejich
+%                 poskytnutí po zaslání příslušného požadavku
+%         \end{itemize}
+
+%         TTN server poskytuje zdarma možnost uchování přijatých dat po 7 dní, a
+%         po tu dobu je zpřístupňuje skrz HTTP API. To je pro účely tohoto 
+%         projektu dostatečné.

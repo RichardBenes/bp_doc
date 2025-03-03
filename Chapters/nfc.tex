@@ -1,0 +1,118 @@
+% Popis technických vlastností a použití rozhraní NFC.
+
+% Jaké jsou NFC tagy?
+% Jak se s nimi komunikuje? Jaké jsou tam příkazy?
+% Něco k fungování mobilu samotného jako NFC tag
+% Co je dynamický NFC tag
+% Popis toho co použitý NFC tag umí a co neumí
+
+%Vlastně můžu přepsat co jsem si zapsal --- moc víc toho není.
+
+% Info zde je z doporučené knihy
+\section{Obecný popis NFC}
+
+    NFC je technologie umožňující bezdrátovou výměnu krátkých zpráv na 
+    krátké vzdálenosti, typicky v jednotkách centimetrů.
+
+    NFC vychází z RFID komunikace, konkrétně z normy ISO-14443 popisující
+    komunikaci na frekvenci 13,56 MHz.
+
+    Ačkoli jsou specifikace NFC dostupné (po zakoupení), je tato technologie 
+    patentem, proto je nutno pro vývoj a výrobů zařízení tuto technologii 
+    užívajících zakoupit příslušnou licenci.
+
+    Komunikace probíhá mezi dvěma zařízeními, v jednom ze dvou režimů:
+
+    \begin{description}
+        \item [Aktivní] obě komunikující zařízení mají svůj vlastní zdroj
+            energie (typicky baterii) --- například komunikace mezi dvěma mobilními telefony
+        \item [Pasivní] jedno z komunikujících zařízení má vlastní zdroj energie
+            a generuje rádiový signál, druhé je tímto signálem napájeno a
+            odpovídá na zaslané požadavky.
+    \end{description}
+
+    Při komunikaci v pasivním režimu se zařízení napájené rádiovým polem obvykle
+    označuje jako NFC tag. Tento režim je v kontextu používání mobilních 
+    telefonů známější.
+
+\section{Typy NFC tagů}
+
+    Existují 4 typy NFC tagů standardizované NFC Fórem, a několik dalších typů
+    definovaných jejich výrobci. Standardizované tagy jsou označeny jako 
+    typ 1 až typ 4.
+
+    Jednotlivé typy se navzájem liší zpravidla limity pro paměť, přenosovými 
+    rychlostmi a podporovanými příkazy, podporou pro čtení či čtení i zápis a 
+    dalšími vlastnostmi, např. možnostmi detekce kolizí při komunikaci.
+
+\section{NDEF}
+
+% TODO: Vzhledem k tomu že řeším parsování obsahu NDEF, bylo by vhodné
+% zde jeho strukturu více rozepsat.
+
+    Výrazným rozdílem oproti ostatním RFID technologiím je použití 
+    standardizovaného datového formátu, --- NFC Data Exchange Format. Díky tomu
+    může vývojář aplikace používající NFC přenechat řešení specifik různých
+    typů tagů na použité knihovně, a pracovat pouze se zaslanými/přijatými daty,
+    jejichž formát je známý.
+    
+    Základní jednotkou dat je NDEF Message (zpráva), která
+    obsahuje jeden nebo více NFC Record ("záznam"). Tyto záznamy se skládají z
+    hlavičky a samotných zasílaných dat.
+
+    Hlavička záznamu obsahuje zejména informace o délce a typu dat v záznamu
+    obsažených, navíc pak např. informace o tom, zda se jedná o první či o
+    poslední záznam ve zprávě. 
+
+    Z informací o typu (či formátu) dat je nejdůležitější pole označené jako 
+    Payload Type, které obsahuje textový řetězec popisující formát dat. 
+    Formát toho řetězce však závisí na 3 bitové hdnotě TNF 
+    (Type Name Format), která může nabývat osmi hodnot:
+    
+    \begin{description}
+        \item [0 --- Empty] Značí nepřítomnost dat, v tomto případě ani pole 
+            Payload Type není přítomno
+        \item [1 --- Well-known] Data jsou v jednom z formátů definovaných NFC
+            fórem, například (v závorce odpovídající řetězec pole Payload Type)
+            \begin{itemize}
+                \item Prostý text, obsahující navíc informace o kódování a 
+                    jazyce ("T")
+                \item URI, tj. internetová adresa. Pro snížení množství dat jsou
+                    však některé její části zakódovány dle NDEF standardů ("U")
+                \item Smart Poster ("Sp")
+            \end{itemize}
+        \item [2 --- MIME media type] Například "text/json", "image/gif" atp.
+        \item [3 --- Absolute URI] URI, odkazující na dokument popisující formát
+            přenášených dat
+        \item [4 --- External] Uživatelsky definovaný typ, například Android
+            Application Record, obsahující informaci o tom jaká aplikace se má
+            po načtení tagu spustit
+        \item [5 --- Unknown] Pole Payload Type není přítomno
+        \item [6 --- Unchanged] Stejný typ jako u předcházejícího záznamu --- 
+            tento typ nemůže být u prvního záznamu ve zprávě
+        \item [7 --- Reserved] Rezervováno pro budoucí užití
+    \end{description}
+    
+    Samotná zpráva nemá žádnou hlavičku --- skládá se
+    pouze ze záznamů zařazených za sebe, první a poslední záznam jsou pak označeny
+    příslušnými bity ve svých hlavičkách, díky čemuž komunikující zařízení
+    pozná (do jisté míry) celistvost zprávy.
+    První záznam mívá zpravidla zvláštní význam; 
+    například OS Android dle prvního záznamu rozhoduje, která z aplikací
+    bude spuštěna pro zpracování dat z tagu.
+
+
+\section{Dynamické NFC tagy}
+
+    Dynamické NFC tagy se od běžných liší možností přistupovat do paměti i 
+    jinými způsoby než jen NFC komunikací, a případně i obsah paměti měnit;
+    např. v závislosti na zapsaných datech, externích událostech atp.
+    Pro generování těchto dat pak bývají tyto tagy doplněny mikrokontrolérem.
+
+    Dynamický NFC tag je použit v této práci.
+
+    % V této práci je použit dynamický NFC tag M24ST od výrobce ST 
+    % Microelectronics. Obsahuje EEPROM paměť velikosti 8192B, ke které je možno
+    % kromě NFC rozhraní přistupovat skrze I2C sběrnici. Dále je vybaven 
+    % digitálním výstupem, pomocí nějž lze detekovat probíhající bezdrátovou 
+    % komunikaci.

@@ -1,0 +1,196 @@
+
+Jako LPWAN jsou označovány bezdrátové sítě umožňující komunikaci na velké
+vzdálenosti, typicky v řádech jednotek až desítek kilometrů, s nízkou spotřebou
+energie --- obvykle za cenu malých přenosových rychlostí.
+Komunikujícími zařízeními bývají nejčastěji senzory, často napájené z baterií.
+Typické konstrukční cíle LPWAN jsou []:
+
+\begin{itemize}
+    \item Nízké nároky na energii a tím dlouhá výdrž na baterie, v některých
+    případech i více než 10 let
+    \item Nízká cena zařízení, zvláště pak rádiové části
+    \item Provoz v bezlicenčních, a tedy neplacených frekvenčních pásmech
+    \item Daleký dosah radiové  komunikace --- v řádu kilometrů
+    \item Odolnost proti rušení
+    \item Doručení vysílaných dat do internetu, následné uložení na serverech
+\end{itemize}
+
+
+Běžné protokoly (např. IP, TCP, HTTP) jsou navržené pro přenášení velkého 
+množství dat (např. maximální velikost IP paketu je 65535 bajtů), čemuž odpovídá
+množství přidaných metadat --- např. u IP paketu je minimální velikost hlavičky
+20 bajtů. Další zatížení sítě pak představuje běžné zpětné potvrzování přijatých
+dat (TCP, WiFi).
+% https://en.wikipedia.org/wiki/IPv4
+
+Protože se však v LPWAN sítích běžně posílají data o délkách v jednotkách bajtů,
+nejsou běžné protokoly vhodné --- množství metadat protokoly přidaných by 
+bylo až násobně vyšší než množství přenášených dat.
+
+Pro efektivní provoz v podmínkách LPWAN sítí proto bývají použité protokoly
+charekteristické:
+
+\begin{itemize}
+    \item Malým, nebo dokonce téměř žádným množstvím metadat
+    \item Dopřednými metodami kontroly chyb, což značně snižuje potřebu zasílání
+        potvrzení přijetí, ovšem za cenu navýšení množství zaslaných dat
+    \item Hvězdicovou topologií, kdy koncová zařízení zasílají svá data na 
+        nejbližší bránu, ze které jsou pak doručována běžnými internetovými
+        technologiemi na příslušný server
+\end{itemize}
+
+V této sekci je popsáno několik LPWAN technologií, z nichž jsou dvě 
+proprietální (Sigfox a Ingenu), ostatní jsou otevřenými standardy. LoRa a 
+LoRaWAN, v této práci použité, jsou rozebrány podrobněji ve vlastních sekcích. 
+LoRaWAN je otevřený standard, který podporuje bezdrátový přenos několika kanály
+používajícími proprietální modulaci LoRa a jedním kanálem používajícím 
+standardní modulaci FSK.
+
+Zdroje jsou uvedeny na konci každé sekce.
+
+\section{Sigfox}
+
+Sigfox je proprietální technologií francouzské společnosti Sigfox S.A. Tato 
+stanovuje topologii podobnou mobilním sítím, ve které jednotlivá zařízení 
+komunikují se stanicemi připojenými k internetu. Ty pak pošlou přijaté zprávy 
+na síťový server, který odstraní duplikáty a pošle data konkrétnímu 
+uživateli.
+
+Fyzický přenos dat funguje v sub-GHz bezlicenčním pásmu (v Evropě ISM pásmo 
+868MHz).
+
+Pro přenos směrem od zařízení na stanici (uplink) je použita D-BPSK modulace. 
+Každá zpráva je přenášena rychlostí 100 nebo 600 bitů za sekundu, v závislosti 
+na regionu. Celkové pásmo ve kterém Sigfox pracuje je široké 192kHz, díky 
+použité modulaci pak každá zpráva zabírá z tohoto pásma šířku pouze 1Hz na 1bps, 
+tedy 100 nebo 600Hz
+
+Každé zařízení může vyslat maximálně 140 zpráv za jeden den, množství dat v 
+každé zprávě je do 12 bajtů. Při tomto směru komunikace má Sigfox hodnotu link 
+budget $-163,3$dB i při nízkém vysílacím výkonu.
+% Co je to link budget?
+
+Komunikace směrem od stanice k zařízení (downlink) je omezena na max. 4 zprávy 
+za den po 8 bajtech, narozdíl od uplink komunikace pak probíhá pomocí GFSK 
+modulace.
+
+Zařízení při odesílání používá frekvenci náhodně vybranou z celého pásma --- 
+Sigfox pásmo \emph{nerozděluje} na kanály. Díky tomu jsou kladeny jen nízké 
+nároky na přesnost použité frekvence, což příznivě ovlivňuje cenu rádiových částí komunikačních
+modulů. Díky úzkému použitému pásmu použitému při vysílání a omezenému počtu 
+odesílaných zpráv za den je velmi malá pravděpodobnost kolizí. Zařízení 
+přistupují k médiu náhodně, nedochází k žádné synchronizaci mezi zařízením a 
+stanicí. Pro zajištění spolehlivého přenosu je každá zpráva odeslána třikrát.
+
+Při přenášení se díky optimalizovanému protokolu přenáší jen malé množství 
+metadat --- pro přenos 12 bajtů dat je celková délka zprávy pouze 26 bajtů.
+
+Každé koncové zařízení má v uživateli nepřístupné paměti uložen privátní klíč, a 
+v přístupné paměti ID. Každá zpráva obsahuje podpis, vygenerovaný pomocí klíče a 
+ID, a sekvenční číslo. Díky tomu je komunikace odolná proti podvrženým zprávám.
+%\footnote{Video ``Radio access network'' na https://www.sigfox.com/en/what%
+%-sigfox/technology}.
+%\footnote{Sekce ``Technical summary'' na https://en.wiki%
+%pedia.org/wiki/DASH7}). 
+%\href{https://www.sigfox.com/en/what-sigfox/technology}
+%    {https://www.sigfox.com/en/what-sigfox/technology}
+
+\section{Ingenu}
+
+Ingenu je společnost poskytující LPWAN konektivitu používající bezlicenční 
+pásmo 2.4GHz, s důrazem na dlouholetou podporu nasazených zařízení. Výhodou 
+použití pásma 2.4GHz je jeho dostupnost po celém světě --- na rozdíl od 
+technologií používajících sub-GHz pásma tedy není potřeba při nákupu vysílačů 
+rozlišovat
+region, ve kterém bude zařízení provozováno. Použitá topologie je opět podobná mobilním 
+sítím, kdy koncové zařízení komunikuje s branami posílajícími data do cloudu,
+odkud se zašlou kam zákazník žádá. Společnost Ingenu je jediným vývojářem 
+dané technologie a zároveň jediným producentem příslušného hardwaru.
+% Tak stanice, nebo brány?
+
+Použitá technologie se nazývá RPMA --- Random Phase Multiple Access. Šířka 
+využitého pásma je 80MHz, maximální komunikační rychlost je 80kbps. Spolehlivost
+komunikace je pak zajištěna potvrzováním každé odeslané zprávy. Výrazným 
+rozdílem oproti jiným technologiím je uváděný počet zařízení, které dokáže jedna 
+stanice obsloužit --- dle výrobce až 2 miliony, tj. ekvivalent 18 LoRa bran či 
+70 Sigfox bran. Standard podporuje dynamické přizpůsobení vysílacího výkonu a 
+komunikační rychlosti v závislosti na aktuální vzdálenosti, míře rušení atd., 
+díky čemuž výrobce uvádí výdrž zařízení až desítky let bez výměny baterií.
+
+Ve srovnání s technologiemi používajícími sub-GHz pásma obnáší použití frekvencí 
+v pásmu 2.4GHz nižší dosah při stejném vysílacím výkonu, vyšší ztráty v 
+překážkách, vyšší spotřebu energie a podstatně vyšší zarušení --- ve stejném 
+pásmu pracuje WiFi, Bluetooth,  aj.
+
+%\href{https://www.ingenu.com/technology/}{https://www.ingenu.com/technology/},
+%kniha
+
+\section{Weightless}
+
+Weightless je otevřený standard pro LPWAN komunikaci. Je však patentován, a pro 
+jeho provoz je třeba licence a kvalifikace komunikujícího zařízení. Tu provádí 
+organizace Weightless SIG. Od prvního uvedení vznikly tři verze standardu --- 
+W, N a P.
+
+Původní verze Weightless W používá více různých modulací (např. DBPSK, stejně 
+jako Sigfox) a pracuje v tzv. white-space --- v mezerách mezi přidělenými 
+frekvenčními pásmy používanými komerčním televizním vysíláním. Topologie je opět 
+podobná 
+mobilním sítím, přenosové rychlosti se pohybují od 1kbps do 1Mbps. Z důvodu 
+nedostupnosti užívaných frekvencí či nemožnosti jejich využití v mnoha oblastech 
+byl vyvinut standard N.
+
+Weightless N komunikuje v bezlicenčních pásmech, komunikace probíhá pouze 
+jednosměrně od zařízení ke stanici. Rychlost komunikace je do 100kbps, dosah se 
+pohybuje kolem 3km. Pro umožnění komunikace v obou směrech byl vyvinut třetí 
+standard Weightless P, užívající GMSK a QPSK modulace, opět v bezlicenčních 
+pásmech. Komunikace je tedy již obousměrná, umožňující (avšak nevyžadující) 
+potvrzování odeslaných zpráv. Ve srovnání s Weightless N je dosah je nižší, 
+zhruba kolem 2km, komunikační rychlost je pak podobná --- kolem 100kbps.
+
+%{[}z knihy a wiki, stránky nedostupné.{]}
+
+\section{Otevřené standardy v pásmu LTE}
+
+LPWAN standardy NB-IoT a LTE-M jsou provozovány v pásmech LTE. Díky tomu je pro 
+provozovatele telekomunikačních sítí snadné jejich nasazení, spočívající pouze 
+v programové úpravě stávajících stanic. Oba standardy jsou otevřené, poskytované
+skupinou 3GPP. Dosah je velmi závislý na pokrytí oblasti signálem, při přímé
+viditelnosti může dosahovat až desítek kilometrů.
+
+\subsection{NB-IoT}
+
+NB-IoT je ve srovnání s LTE-M vhodné k provozu zařízení posílajících malé 
+množství dat v delších časových intervalech. Používá modulaci OFDMA pro 
+downlink, a SCFD uplink. Obousměrný provoz je podporován v režimu half-duplex. 
+Jedna stanice je schopna obsluhovat až 50000 zařízení. Zařízení posílají zprávy 
+o délce až 1600B, rychlostí max. 127kbps od stanice k zařízení a 159kbps od 
+zařízení ke stanici. Z hlediska spotřeby energie je nevýhodou oproti jiným
+technologiím nutnost udržovat spojení se sítí i v případě kdy zařízení 
+komunikovat nepotřebuje.
+% definovat downlink a uplink
+
+\subsection{LTE-M}
+
+LTE-M je v porovnání s NB-IoT vhodné k použití v kritických aplikacích, kdy je 
+nutná komunikace v reálném čase. Ze všech LPWAN technologií má vůbec nejvyšší 
+datovou propustnost. Jedna stanice dokáže obsluhovat přes 100000 zařízení. 
+Přenosové rychlosti mohou špičkově dosahovat až 4Mbps dowlink, 7Mbps uplink. 
+Obousměrný provoz je možno realizovat polovičním či plným duplexem. Standard 
+podporuje i přenášení hlasu, avšak pouz v případech standardního pokrytí
+(v kontrastu s rozšířeným pokrytím).
+
+%https://en.wikipedia.org/wiki/Narrowband_IoT, 
+%https://en.wikipedia.org/wiki/Narrowband_IoT,
+%https://www.sierrawireless.com/iot-blog/lte-m-vs-nb-iot/
+
+\section{DASH7}
+
+DASH7 je zcela otevřený standard spravovaný organizací DASH7 Alliance, založený 
+na standardu ISO/IEC 18000-7, popisujícím 433MHz RFID. DASH7 je tedy provozován 
+v bezlicenčním sub-GHz pásmu. Topologie se skládá ze stanic, koncových zařízení 
+a volitelně také subkontrolérů, které rozšiřují dosah stanic tím že na ně 
+přeposílají přijaté zprávy. Mimo to je možná vzájemná komunikace mezi koncovými
+zařízeními. Standard definuje všechny vrstvy ISO/OSI modelu, nikoli jen fyzickou 
+a linkovou vrstvu. Komunikace je šifrovaná pomocí AES-128 algoritmu, nejvyšší 
+rychlost je 167kbps. Podporované topologie jsou uzel-uzel, hvězdice, strom.
