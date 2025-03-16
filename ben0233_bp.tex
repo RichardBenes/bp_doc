@@ -6,6 +6,7 @@
 \usepackage{dcolumn} % sloupce tabulky s ciselnymi hodnotami
 \usepackage{subfig} % makra pro "podobrazky" a "podtabulky"
 \usepackage[cpp]{diplomalst}
+\usepackage{graphicx}
 
 % Zadame pozadovane vstupy pro generovani titulnich stran.
 \ThesisAuthor{Richard Beneš}
@@ -66,6 +67,7 @@
 \AddAcronym{MIB}{Management Information Base}
 \AddAcronym{GC}{Garbage Collection}
 \AddAcronym{MMU}{Memory Management Unit}
+\AddAcronym{HTTP}{Hyper Text Transport Protocol}
 
 \addbibresource{biblatex-examples.bib}
 \addbibresource{coffee.bib}
@@ -96,44 +98,42 @@
 
 \chapter{Úvod}
 
-\input{Chapters/uvod}
+\input{Chapters/01_uvod}
 
 \chapter{Souhrnná rešerše stávajících LPWAN sítí}
 
-\input{Chapters/lpwan_research}
+\input{Chapters/02_lpwan_reserse}
 
 \chapter{Technický popis LoRa}
 
-\input{Chapters/lora}
+\input{Chapters/03_lora}
 
 \chapter{Technický popis LoRaWAN}
 
-\input{Chapters/lorawan}
+\input{Chapters/04_lorawan}
 
 \chapter{Popis technických vlastností a použití rozhraní NFC}
 % Co to je, co s čím a jak komunikuje, normy, možnosti využití (?)
 
-\input{Chapters/nfc}
+\input{Chapters/05_nfc}
 
-\chapter{Návrh řešení}
+\chapter{Popis zařízení}
 
-\input{Chapters/navrh_reseni}
+\input{Chapters/06_popis_zarizeni}
 
-\chapter{MCU}
-
-\input{Chapters/mcu}
+\input{Chapters/07_mcu_devkit}
 
 \chapter{Periferní zařízení}
 
-\input{Chapters/periferie}
+\input{Chapters/08_periferie}
 
 \chapter{Software}
 
-\input{Chapters/sw}
+\input{Chapters/09_sw}
 
 \chapter{Android aplikace}
 
-\input{Chapters/android_app}
+\input{Chapters/10_android_app}
 
 % Seznam literatury
 \printbibliography[title={Literatura}, heading=bibintoc]

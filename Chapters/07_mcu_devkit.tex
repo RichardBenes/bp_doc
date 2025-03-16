@@ -1,0 +1,14 @@
+\chapter{Vývojový kit s mikrokontrolérem a jeho periferie}
+
+V práci je použit vývojový kit STM32L476-DISCO s mikrokontrolérem STM32L476VGT6.
+Ten byl použit protože byl k dispozici a zároveň je pro něj použitá LoRaWAN knihovna (SWL2001) nabízí referenční implementaci.
+
+Mikrokontrolér je architektury RISC, má jádro Cortex-M, 32 bitovou sběrnici a jednotný paměťový prostor. MCU podporuje ladění a krokování programu, čehož bylo v průběhu práce hojně využíváno.
+
+Vývojový kit je osazen mnoha periferiemi -- přítomný je LCD displej, USB OTG, audio výstup, digitální mikrofon, akcelerometr, gyroskop a další. Z periferií byl však využit pouze 4 osý joystick, jedna zelená LED a zálohovací knoflíková baterie.
+
+Mnohé z použitých periferií jsou velice komplexní a nabízejí řadu různých režimů a využitelných funkcí. Zde jsou popsány pouze ty funkce které jsou v práci použity.
+
+\section{GPIO a přerušení}
+
+GPIO periferie slouží k práci s fyzickými piny mikrokontroléru -- jejich konfigurace (vstup/výstup, aktivace pull-up rezistorů atp.), čtení stavu a nastavování výstupních hodnot. Ty mohou být řízeny buď zápisem do příslušného registru (ODR), nebo jinou periferií -- např. 
